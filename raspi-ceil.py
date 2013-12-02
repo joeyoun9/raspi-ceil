@@ -50,7 +50,7 @@ def save(data):
         fh.write(data)
         fh.close()
     except:
-        l.waning('DATA NOT SAVED')
+        l.warning('DATA NOT SAVED')
     try:
         # this is where we send thed data to the internets!
         pass
@@ -100,7 +100,7 @@ def main(BAUDRATE, BYTESIZE, BOM, EOM, PORT, FILESTR, LOCATION, DELAY, devmode=F
 	    # ok, well, that's the best I can do, continue
 	    pass
 
-	f = open("./.raspiceilpid", 'w')
+	f = open(LOCATION + "/.raspiceilpid", 'w')
 	f.write(str(os.getpid()))
 	f.close()
 	l.info('Beginning active data collection')
