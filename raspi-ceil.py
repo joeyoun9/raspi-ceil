@@ -122,6 +122,8 @@ def main(BAUDRATE, BYTESIZE, BOM, EOM, PORT, FILESTR, LOCATION, DELAY, devmode=F
         # loop through all likely ports...
         try:
             ser.port = '/dev/ttyUSB%i' % port
+            if not os.path.exists(ser.port):
+                continue
             ser.open()
             break  # try no more!
         except serial.serialutil.SerialException as e:
