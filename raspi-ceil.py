@@ -31,7 +31,8 @@ THIS WILL FIRST SAVE THE DATA WITH A TIMESTAMP. IT CAN THEN ATTEMPT TO
 SEND DATA TO OUR SERVERS.
 """
 
-
+l.basicConfig(filename=filename, filemode='a',
+              format="%(asctime)s %(levelname)s: %(message)s", level=l.DEBUG)
 
 
 
@@ -69,8 +70,7 @@ def main(BAUDRATE, BYTESIZE, BOM, EOM, PORT, FILESTR, LOCATION, DELAY, devmode=F
 	filename = LOCATION + "log/raspi-ceil.log"
 	if devmode:
 	    filename = None
-	l.basicConfig(filename=filename, filemode='a',
-	              format="%(asctime)s %(levelname)s: %(message)s", level=l.DEBUG)
+
 
 
 
