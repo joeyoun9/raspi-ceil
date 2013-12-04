@@ -123,6 +123,7 @@ def main(BAUDRATE, BYTESIZE, BOM, EOM, PORT, FILESTR, LOCATION, DELAY, devmode=F
         try:
             ser.port = '/dev/ttyUSB%i' % port
             if not os.path.exists(ser.port):
+                port += 1
                 continue
             ser.open()
             break  # try no more!
