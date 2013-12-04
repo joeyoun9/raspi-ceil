@@ -50,7 +50,7 @@ def save(data):
         fh.write(data)
         fh.close()
     except:
-        l.warning('DATA NOT SAVED')
+        lg.warning('DATA NOT SAVED')
     try:
         # this is where we send thed data to the internets!
         pass
@@ -66,7 +66,7 @@ def main(BAUDRATE, BYTESIZE, BOM, EOM, PORT, FILESTR, LOCATION, DELAY, devmode=F
     
     """
 
-    logfilename = LOCATION + "log/raspi-ceil.log"
+    logfilename = LOCATION + "log/raspi-ceilg.log"
     if devmode:
         logfilename = None
     lg.basicConfig(filename=logfilename, filemode='a',
@@ -131,7 +131,7 @@ def main(BAUDRATE, BYTESIZE, BOM, EOM, PORT, FILESTR, LOCATION, DELAY, devmode=F
             print e
             port += 1
     if port == 20:
-        l.warning('No valid USB serial port identified, aborting')
+        lg.warning('No valid USB serial port identified, aborting')
         exit()
 
 
