@@ -151,16 +151,16 @@ def main(BAUDRATE, BYTESIZE, BOM, EOM, PORT, FILESTR, LOCATION, DELAY, devmode=F
     while 1:
         time.sleep(DELAY)  # greatly reduce server load
         if ser.inWaiting() > 0:
-            l = ser.read(ser.inWaiting())
+            st = ser.read(ser.inWaiting())
             if devmode:
-                print l
+                print st
                 continue
-            ob += l
+            ob += st
             # and then check if both begin and end control characters are present. if so, save the ob
             # WITH A TIMESTAMP!
             if BOM in ob and EOM in ob:
                 save(ob)
-                l.debug('Message received')
+                lg.debug('Message received')
                 ob = ''
             elif EOM in ob and not BOM in ob:
                 # this means the recorder started in the middle of a message, save it
