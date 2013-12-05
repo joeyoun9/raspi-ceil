@@ -50,8 +50,8 @@ def save(data, LOCATION, FILESTR):
         fh.write(str(time.time()))  # write the epoch time
         fh.write(data)
         fh.close()
-    except Error as e:
-        lg.warning('DATA NOT SAVED' + str(e))
+    except:
+        lg.warning('DATA NOT SAVED' + str(sys.exc_info()))
     try:
         # this is where we send thed data to the internets!
         pass
