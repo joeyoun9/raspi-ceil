@@ -6,6 +6,7 @@ import datetime
 import logging as lg
 import os
 import sys
+import signal
 
 
 
@@ -49,8 +50,8 @@ def save(data, LOCATION, FILESTR):
         fh.write(str(time.time()))  # write the epoch time
         fh.write(data)
         fh.close()
-    except:
-        lg.warning('DATA NOT SAVED')
+    except e:
+        lg.warning('DATA NOT SAVED' + str(e))
     try:
         # this is where we send thed data to the internets!
         pass
@@ -59,6 +60,18 @@ def save(data, LOCATION, FILESTR):
         pass
 
 
+def testproc(proc):
+    try:
+        os.kill(int(proc), 0)
+        return True  # yes, process is running
+    except:
+        # hopefully this is not an os error
+        return False
+
+def killproc(proc):
+    if testproc(proc):
+        os.kill(int(proc), signal.SIGTERM)  # or SIGKILL or SIGABORT...
+    return
 
 def main(BAUDRATE, BYTESIZE, BOM, EOM, PORT, FILESTR, LOCATION, DELAY, devmode=False):
     """
@@ -84,25 +97,16 @@ def main(BAUDRATE, BYTESIZE, BOM, EOM, PORT, FILESTR, LOCATION, DELAY, devmode=F
         f = open(LOCATION + ".raspiceilpid", 'r')
         pid = f.read()
         f.close()
-        try:
-            #  os.kill sends a signal to a process, signal 0 ilicits no response, so this does not actually kill anything
-            os.kill(int(pid), 0)
-            print "Another listener is already running"
-            if not devmode:
-                exit()
-            else:
-                import signal
-                print 'DEVMODE: killing current process'
-                os.kill(int(pid), signal.SIGTERM)  # or SIGKILL or SIGABORT...
-        except OSError:
-            pass
-        # ok, that process is not running, so continue
-
+        if devmode:
+            killproc(pid)
+        elif testproc(pid):
+             print "Another listener is already running"  # useless considering nobody watches this
+             exit()
     else:
         # ok, well, that's the best I can do, continue
         pass
 
-    f = open(LOCATION + "/.raspiceilpid", 'w')
+    f = open(LOCATION + ".raspiceilpid", 'w')
     f.write(str(os.getpid()))
     f.close()
     lg.info('Starting ceilometer listener process... looking for a connection')
@@ -172,7 +176,24 @@ if __name__ == "__main__":
 
     # use keyword 'dev' to run the code in non-recording dev/verbose mode
     devmode = False
-    if len(sys.argv) > 1 and sys.argv[1] == 'dev':
-        devmode = True
+    if len(sys.argv) > 1:
+        if sys.argv[1] == 'dev':
+            devmode = True
+        elif sys.argv[1] == 'update':
+            # grab the newest version of this file from github, and replace this one
+            # assuming this is running in the directory where this file is, which, is necessary
+            if os.path.exists(LOCATION + ".raspiceilpid"):
+                # check it
+                f = open(LOCATION + ".raspiceilpid", 'r')
+                pid = f.read()
+                f.close()
+                killproc(pid)
+            # ok, we have killed the old one
+            os.system('wget https://raw.github.com/joeyoun9/raspi-ceil/master/raspi-ceil.py')
+            if os.path.exists('./raspi-ceil.py.1'):
+                os.system('rm raspi-ceil.py')
+                os.system('mv raspi-ceil.py.1 raspi-ceil.py')
+            print "RASPI-CEIL SOFTWARE UPDATED FROM GITHUB"
+            exit()
 
     main(BAUDRATE, BYTESIZE, BOM, EOM, PORT, FILESTR, LOCATION, DELAY, devmode)
