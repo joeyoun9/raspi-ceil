@@ -18,7 +18,7 @@ PORT = 0  # change this if you know port ttyUSB0 is taken
 FILESTR = "ceil"  # unique string for the filename that will be saved
 
 LOCATION = "/home/pi/"  # where the codes and data are located. If you change this, change the cron too!
-DELAY = .5  # how long to wait between polling - larger delay reduces the number of iterations made
+DELAY = .5  # how long to wait between polling - larger delay reduces the number of iterations made (thus the load on the RPI)
 
 
 
