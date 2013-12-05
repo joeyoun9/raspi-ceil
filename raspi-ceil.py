@@ -47,7 +47,7 @@ def save(data, LOCATION, FILESTR):
     """
     try:
         fh = open(LOCATION + 'data/{:%Y%m%d}_{}.dat'.format(datetime.datetime.utcnow(), FILESTR), 'a')
-        fh.write(str(time.time()))  # write the epoch time
+        fh.write(str(time.time()) + "\n")  # write the epoch time
         fh.write(data)
         fh.close()
     except:
