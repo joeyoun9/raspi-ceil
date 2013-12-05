@@ -9,10 +9,10 @@ import sys
 
 
 
-BAUDRATE = 2400  # I have no idea where this number came from..., baud rate is 300 for the instrument, up to 1200 on demand...
+BAUDRATE = 9600  # 2400  # I have no idea where this number came from..., baud rate is 300 for the instrument, up to 1200 on demand...
 BYTESIZE = 7  # I assume this is 8-bit with 1 start bit means 8-1 = 7... again, no idea here...
-BOM = chr(002)  # beginning of message chr(001) for CL-31
-EOM = chr(003)  # end of message chr(004) for CL-31
+BOM = chr(001)  # chr(002)  # beginning of message chr(001) for CL-31
+EOM = chr(004)  # chr(003)  # end of message chr(004) for CL-31
 PORT = 0  # change this if you know port ttyUSB0 is taken
 FILESTR = "ceil"  # unique string for the filename that will be saved
 
@@ -38,7 +38,7 @@ SEND DATA TO OUR SERVERS.
 
 
 
-def save(data):
+def save(data, LOCATION, FILESTR):
     """
     THIS IS THE FUNCTION THAT RECEIVES A DATA MESSAGE AND SAVES IT LOCALLY
     AND THEN THE FUNCTION ATTEMPTS TO SEND THE DATA TO OUR SERVER AT MESO1
@@ -66,7 +66,7 @@ def main(BAUDRATE, BYTESIZE, BOM, EOM, PORT, FILESTR, LOCATION, DELAY, devmode=F
     
     """
 
-    logfilename = LOCATION + "log/raspi-ceilg.log"
+    logfilename = LOCATION + "log/raspi-ceil.log"
     if devmode:
         logfilename = None
     lg.basicConfig(filename=logfilename, filemode='a',
@@ -105,9 +105,9 @@ def main(BAUDRATE, BYTESIZE, BOM, EOM, PORT, FILESTR, LOCATION, DELAY, devmode=F
     f = open(LOCATION + "/.raspiceilpid", 'w')
     f.write(str(os.getpid()))
     f.close()
-    lg.info('Beginning active data collection')
+    lg.info('Starting ceilometer listener process... looking for a connection')
     if devmode:
-        print "DEVMODE: no data being collected, all data printing to screen"
+        lg.warning("DEVMODE: no data being collected, all data printing to screen")
 
     ser = serial.Serial()
     ser.baudrate = BAUDRATE
@@ -164,7 +164,7 @@ def main(BAUDRATE, BYTESIZE, BOM, EOM, PORT, FILESTR, LOCATION, DELAY, devmode=F
                 ob = ''
             elif EOM in ob and not BOM in ob:
                 # this means the recorder started in the middle of a message, save it
-                save(ob)
+                save(ob, LOCATION, FILESTR)
                 ob = ''
 
 
