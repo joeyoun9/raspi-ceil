@@ -141,14 +141,15 @@ def main(BAUDRATE, BYTESIZE, BOM, EOM, PORT, FILESTR, LOCATION, DELAY, devmode=F
 
     lg.info("Connected to a USB device on {}".format(ser.port))
 
-    print """
-    
-        DEVMODE: PRINTING SERIAL DATA RECEIVED. 
-        NOTE: GARBLED TEXT MEANS BAUD RATE AND/OR BYTE SIZE NOT ACCURATELY SPECIFIED 
-    
-    /////////////////////////////////////////////////////////////////////////////////
+    if devmode:
+        print """
         
-    """
+            DEVMODE: PRINTING SERIAL DATA RECEIVED. 
+            NOTE: GARBLED TEXT MEANS BAUD RATE AND/OR BYTE SIZE NOT ACCURATELY SPECIFIED 
+        
+        /////////////////////////////////////////////////////////////////////////////////
+            
+        """
 
 
     ob = ''
@@ -163,7 +164,7 @@ def main(BAUDRATE, BYTESIZE, BOM, EOM, PORT, FILESTR, LOCATION, DELAY, devmode=F
             # and then check if both begin and end control characters are present. if so, save the ob
             # WITH A TIMESTAMP!
             if BOM in ob and EOM in ob:
-                save(ob)
+                save(ob, LOCATION, FILESTR)
                 lg.debug('Message received')
                 ob = ''
             elif EOM in ob and not BOM in ob:
