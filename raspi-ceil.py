@@ -61,7 +61,10 @@ def save(data, LOCATION, FILESTR):
     except:
         # well, it failed. no worries, the data should sill be safe
         pass
-    temp_file_name = os.listdir(LOCATION+"data/temp/")[0]
+    try:
+        temp_file_name = os.listdir(LOCATION+"data/temp/")[0]
+    except IndexError:
+        temp_file_name = ""
     if not save_name == temp_file_name:
         # remove the old temp file, and copy in this one
         os.system('rm '+LOCATION+"data/temp/"+temp_file_name)
