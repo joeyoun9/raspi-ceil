@@ -45,8 +45,11 @@ def save(data, LOCATION, FILESTR):
     AND THEN THE FUNCTION ATTEMPTS TO SEND THE DATA TO OUR SERVER AT MESO1
     VIA A SIMPLE PUSH COMMAND.
     """
+    
+    save_name = '{:%Y%m%d}_{}.dat'.format(datetime.datetime.utcnow(),FILESTR)
+    save_location = LOCATION + 'data/'+save_name
     try:
-        fh = open(LOCATION + 'data/{:%Y%m%d}_{}.dat'.format(datetime.datetime.utcnow(), FILESTR), 'a')
+        fh = open(save_location, 'a')
         fh.write(str(time.time()) + "\n")  # write the epoch time
         fh.write(data)
         fh.close()
@@ -58,6 +61,12 @@ def save(data, LOCATION, FILESTR):
     except:
         # well, it failed. no worries, the data should sill be safe
         pass
+    temp_file_name = os.listdir(LOCATION+"data/temp/")[0]
+    if not save_name == temp_file_name:
+        # remove the old temp file, and copy in this one
+        os.system('rm '+LOCATION+"data/temp/"+temp_file_name)
+        os.system('cp '+save_location+" "+LOCATION+"data/temp/"+save_name)
+    
 
 
 def testproc(proc):
