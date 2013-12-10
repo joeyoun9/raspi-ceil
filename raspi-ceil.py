@@ -47,6 +47,7 @@ def save(data, LOCATION, FILESTR):
     """
     
     save_name = '{:%Y%m%d}_{}.dat'.format(datetime.datetime.utcnow(),FILESTR)
+    
     save_location = LOCATION + 'data/'+save_name
     try:
         fh = open(save_location, 'a')
@@ -61,14 +62,20 @@ def save(data, LOCATION, FILESTR):
     except:
         # well, it failed. no worries, the data should sill be safe
         pass
+    
+    
+    #TEMPORARY FILE, HOLDS YESTERDAYS FILE SO IT CAN BE EASILY FETCHED!
+    
+    
+    temp_file_name = '{:%Y%m%d}_{}.dat'.format(datetime.datetime.utcnow()-datetime.timedelta(1),FILESTR)
     try:
-        temp_file_name = os.listdir(LOCATION+"data/temp/")[0]
+        old_temp_file_name = os.listdir(LOCATION+"data/temp/")[0]
     except IndexError:
-        temp_file_name = ""
-    if not save_name == temp_file_name:
+        old_temp_file_name = "blablablabla"
+    if not temp_file_name == old_temp_file_name:
         # remove the old temp file, and copy in this one
-        os.system('rm '+LOCATION+"data/temp/"+temp_file_name)
-        os.system('cp '+save_location+" "+LOCATION+"data/temp/"+save_name)
+        os.system('rm '+LOCATION+"data/temp/*")
+        os.system('cp '+LOCATION+"data/"+temp_file_name+" "+LOCATION+"data/temp/"+temp_file_name)
     
 
 
