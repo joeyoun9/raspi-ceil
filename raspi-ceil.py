@@ -71,7 +71,7 @@ def save(data, LOCATION, FILESTR):
 
     if not temp_file_name+'.gz' in os.listdir(LOCATION+"data/temp/"):
         # remove the old temp file, and copy in this one
-        os.system('rm '+LOCATION+"data/temp/*_"+FILESTR+".dat")
+        os.system('rm '+LOCATION+"data/temp/*_"+FILESTR+".d*")
         os.system('cp '+LOCATION+"data/"+temp_file_name+" "+LOCATION+"data/temp/"+temp_file_name)
         os.system('gzip '+LOCATION+"data/temp/"+temp_file_name+" &")
     
