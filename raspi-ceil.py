@@ -69,7 +69,7 @@ def save(data, LOCATION, FILESTR):
     
     temp_file_name = '{:%Y%m%d}_{}.dat'.format((datetime.datetime.utcnow()-datetime.timedelta(1)),FILESTR)
 
-    if not temp_file_name+'.gz' in os.listdir(LOCATION+"data/temp/") and not temp_file_name in os.listdir(LOCATION+"data/temp/")):
+    if not temp_file_name+'.gz' in os.listdir(LOCATION+"data/temp/") and not temp_file_name in os.listdir(LOCATION+"data/temp/"):
         # remove the old temp file, and copy in this one
         os.system('rm '+LOCATION+"data/temp/*_"+FILESTR+".d*")
         os.system('cp '+LOCATION+"data/"+temp_file_name+" "+LOCATION+"data/temp/"+temp_file_name)
