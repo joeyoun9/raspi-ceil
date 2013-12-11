@@ -64,7 +64,7 @@ def save(data, LOCATION, FILESTR):
         pass
     
     
-    #TEMPORARY FILE, HOLDS YESTERDAYS FILE SO IT CAN BE EASILY FETCHED!
+    #TEMPORARY FILE, HOLDS YESTERDAYS (gzipped) FILE SO IT CAN BE EASILY FETCHED!
     
     
     temp_file_name = '{:%Y%m%d}_{}.dat'.format((datetime.datetime.utcnow()-datetime.timedelta(1)),FILESTR)
@@ -77,7 +77,7 @@ def save(data, LOCATION, FILESTR):
         if old_temp_file_name:
             os.system('rm '+LOCATION+"data/temp/"+old_temp_file_name)
         os.system('cp '+LOCATION+"data/"+temp_file_name+" "+LOCATION+"data/temp/"+temp_file_name)
-        os.system('gzip '+LOCATION+"data/temp/"+temp_file_name)
+        os.system('gzip '+LOCATION+"data/temp/"+temp_file_name+" &")
     
 
 
@@ -114,9 +114,10 @@ def main(BAUDRATE, BYTESIZE, BOM, EOM, PORT, FILESTR, LOCATION, DELAY, devmode=F
     # this block of code checks if there is already a process
     # running that is performing this task
     process_file_name = LOCATION+".raspiceilpid"+FILESTR
-    if os.path.exists(LOCATION + ".raspiceilpid"):
+    
+    if os.path.exists(process_file_name):
         # check it
-        f = open(LOCATION + ".raspiceilpid", 'r')
+        f = open(process_file_name, 'r')
         pid = f.read()
         f.close()
         if devmode:
@@ -128,7 +129,7 @@ def main(BAUDRATE, BYTESIZE, BOM, EOM, PORT, FILESTR, LOCATION, DELAY, devmode=F
         # ok, well, that's the best I can do, continue
         pass
 
-    f = open(LOCATION + ".raspiceilpid", 'w')
+    f = open(process_file_name, 'w')
     f.write(str(os.getpid()))
     f.close()
     lg.info('Starting ceilometer listener process... looking for a connection')
@@ -205,9 +206,9 @@ if __name__ == "__main__":
         elif sys.argv[1] == 'update':
             # grab the newest version of this file from github, and replace this one
             # assuming this is running in the directory where this file is, which, is necessary
-            if os.path.exists(LOCATION + ".raspiceilpid"):
+            if os.path.exists(LOCATION+".raspiceilpid" + FILESTR):
                 # check it
-                f = open(LOCATION + ".raspiceilpid", 'r')
+                f = open(LOCATION+".raspiceilpid" + FILESTR, 'r')
                 pid = f.read()
                 f.close()
                 killproc(pid)
