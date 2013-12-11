@@ -219,5 +219,12 @@ if __name__ == "__main__":
                 os.system('mv raspi-ceil.py.1 raspi-ceil.py')
             print "RASPI-CEIL SOFTWARE UPDATED FROM GITHUB"
             exit()
+        elif sys.argv[1] == 'restart':
+            if os.path.exists(LOCATION+".raspiceilpid" + FILESTR):
+                # check it
+                f = open(LOCATION+".raspiceilpid" + FILESTR, 'r')
+                pid = f.read()
+                f.close()
+                killproc(pid)
 
     main(BAUDRATE, BYTESIZE, BOM, EOM, PORT, FILESTR, LOCATION, DELAY, devmode)
