@@ -69,7 +69,7 @@ def save(data, LOCATION, FILESTR):
     
     temp_file_name = '{:%Y%m%d}_{}.dat'.format((datetime.datetime.utcnow()-datetime.timedelta(1)),FILESTR)
 
-    if not ( temp_file_name+'.gz' in os.listdir(LOCATION+"data/temp/") or temp_file_name in os.listdir(LOCATION+"data/temp/")):
+    if not temp_file_name+'.gz' in os.listdir(LOCATION+"data/temp/") and not temp_file_name in os.listdir(LOCATION+"data/temp/")):
         # remove the old temp file, and copy in this one
         os.system('rm '+LOCATION+"data/temp/*_"+FILESTR+".d*")
         os.system('cp '+LOCATION+"data/"+temp_file_name+" "+LOCATION+"data/temp/"+temp_file_name)
@@ -213,6 +213,9 @@ if __name__ == "__main__":
             if os.path.exists('./raspi-ceil.py.1'):
                 os.system('rm raspi-ceil.py')
                 os.system('mv raspi-ceil.py.1 raspi-ceil.py')
+            print "restarting with the new version"
+            os.system('python raspi-ceil.py restart &')
+            
             print "RASPI-CEIL SOFTWARE UPDATED FROM GITHUB"
             exit()
         elif sys.argv[1] == 'restart':
@@ -222,5 +225,6 @@ if __name__ == "__main__":
                 pid = f.read()
                 f.close()
                 killproc(pid)
+                
 
     main(BAUDRATE, BYTESIZE, BOM, EOM, PORT, FILESTR, LOCATION, DELAY, devmode)
