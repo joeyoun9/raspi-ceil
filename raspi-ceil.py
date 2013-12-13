@@ -66,7 +66,7 @@ def save(data, LOCATION, FILESTR):
     
     #TEMPORARY FILE, HOLDS YESTERDAYS (gzipped) FILE SO IT CAN BE EASILY FETCHED!
     
-    
+    """
     temp_file_name = '{:%Y%m%d}_{}.dat'.format((datetime.datetime.utcnow()-datetime.timedelta(1)),FILESTR)
 
     if not temp_file_name+'.gz' in os.listdir(LOCATION+"data/temp/") and not temp_file_name in os.listdir(LOCATION+"data/temp/"):
@@ -74,7 +74,7 @@ def save(data, LOCATION, FILESTR):
         os.system('rm '+LOCATION+"data/temp/*_"+FILESTR+".d*")
         os.system('cp '+LOCATION+"data/"+temp_file_name+" "+LOCATION+"data/temp/"+temp_file_name)
         os.system('gzip '+LOCATION+"data/temp/"+temp_file_name+" &")
-    
+    """
 
 
 def testproc(proc):
