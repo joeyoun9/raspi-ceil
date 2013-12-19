@@ -258,12 +258,12 @@ if __name__ == "__main__":
                 pid = f.read()
                 f.close()
                 killproc(pid)
-            if len(sys.argv > 2):
+            if len(sys.argv) > 2:
                 # then a config file was passed, read it!
                 config_file = sys.argv[2]
         else:
             # then the first argument was the config file!
-            config_file = sys.argv[2]
+            config_file = sys.argv[1]
 
     settings = read_config(config_file)
     BAUDRATE = int(settings['BAUDRATE'])
