@@ -225,7 +225,8 @@ if __name__ == "__main__":
     # use keyword 'dev' to run the code in non-recording dev/verbose mode
     devmode = False
     config_file = "./ceil.conf"
-    if len(sys.argv) > 1:
+    arglen = len(sys.argv)
+    if arglen > 1:
         if sys.argv[1] == 'dev':
             devmode = True
         elif sys.argv[1] == 'update':
@@ -243,7 +244,7 @@ if __name__ == "__main__":
                 os.system('rm raspi-ceil.py')
                 os.system('mv raspi-ceil.py.1 raspi-ceil.py')
             print "restarting with the new version"
-            if len(sys.argv) > 2:
+            if arglen > 2:
                 # the second parameter is the location of the config file
                 os.system("python raspi-ceil.py restart {} &".format(sys.argv[2]))
             else:
@@ -258,7 +259,7 @@ if __name__ == "__main__":
                 pid = f.read()
                 f.close()
                 killproc(pid)
-            if len(sys.argv) > 2:
+            if arglen > 2:
                 # then a config file was passed, read it!
                 config_file = sys.argv[2]
         else:
