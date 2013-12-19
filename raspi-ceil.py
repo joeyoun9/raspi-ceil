@@ -45,13 +45,13 @@ def save(data, LOCATION, FILESTR):
     AND THEN THE FUNCTION ATTEMPTS TO SEND THE DATA TO OUR SERVER AT MESO1
     VIA A SIMPLE PUSH COMMAND.
     """
-    
-    save_name = '{:%Y%m%d}_{}.dat'.format(datetime.datetime.utcnow(),FILESTR)
-    
-    save_location = LOCATION + 'data/'+save_name
+
+    save_name = '{:%Y%m%d}_{}.dat'.format(datetime.datetime.utcnow(), FILESTR)
+
+    save_location = LOCATION + 'data/' + save_name
     try:
         fh = open(save_location, 'a')
-        fh.write(str(time.time()) + "\n")  # write the epoch time
+        fh.write("\n" + str(time.time()) + "\n")  # write the epoch time
         fh.write(data)
         fh.close()
     except:
@@ -62,10 +62,10 @@ def save(data, LOCATION, FILESTR):
     except:
         # well, it failed. no worries, the data should sill be safe
         pass
-    
-    
-    #TEMPORARY FILE, HOLDS YESTERDAYS (gzipped) FILE SO IT CAN BE EASILY FETCHED!
-    
+
+
+    # TEMPORARY FILE, HOLDS YESTERDAYS (gzipped) FILE SO IT CAN BE EASILY FETCHED!
+
     """
     temp_file_name = '{:%Y%m%d}_{}.dat'.format((datetime.datetime.utcnow()-datetime.timedelta(1)),FILESTR)
 
@@ -109,8 +109,8 @@ def main(BAUDRATE, BYTESIZE, BOM, EOM, PORT, FILESTR, LOCATION, DELAY, devmode=F
 
     # this block of code checks if there is already a process
     # running that is performing this task
-    process_file_name = LOCATION+".raspiceilpid"+FILESTR
-    
+    process_file_name = LOCATION + ".raspiceilpid" + FILESTR
+
     if os.path.exists(process_file_name):
         # check it
         f = open(process_file_name, 'r')
@@ -183,6 +183,7 @@ def main(BAUDRATE, BYTESIZE, BOM, EOM, PORT, FILESTR, LOCATION, DELAY, devmode=F
             # and then check if both begin and end control characters are present. if so, save the ob
             # WITH A TIMESTAMP!
             if BOM in ob and EOM in ob:
+                ob = ob[ob.find(BOM):ob.find(EOM) + 1]  # remove any rogue newlines
                 save(ob, LOCATION, FILESTR)
                 lg.debug('Message received')
                 ob = ''
@@ -202,9 +203,9 @@ if __name__ == "__main__":
         elif sys.argv[1] == 'update':
             # grab the newest version of this file from github, and replace this one
             # assuming this is running in the directory where this file is, which, is necessary
-            if os.path.exists(LOCATION+".raspiceilpid" + FILESTR):
+            if os.path.exists(LOCATION + ".raspiceilpid" + FILESTR):
                 # check it
-                f = open(LOCATION+".raspiceilpid" + FILESTR, 'r')
+                f = open(LOCATION + ".raspiceilpid" + FILESTR, 'r')
                 pid = f.read()
                 f.close()
                 killproc(pid)
@@ -215,16 +216,16 @@ if __name__ == "__main__":
                 os.system('mv raspi-ceil.py.1 raspi-ceil.py')
             print "restarting with the new version"
             os.system('python raspi-ceil.py restart &')
-            
+
             print "RASPI-CEIL SOFTWARE UPDATED FROM GITHUB"
             exit()
         elif sys.argv[1] == 'restart':
-            if os.path.exists(LOCATION+".raspiceilpid" + FILESTR):
+            if os.path.exists(LOCATION + ".raspiceilpid" + FILESTR):
                 # check it
-                f = open(LOCATION+".raspiceilpid" + FILESTR, 'r')
+                f = open(LOCATION + ".raspiceilpid" + FILESTR, 'r')
                 pid = f.read()
                 f.close()
                 killproc(pid)
-                
+
 
     main(BAUDRATE, BYTESIZE, BOM, EOM, PORT, FILESTR, LOCATION, DELAY, devmode)
