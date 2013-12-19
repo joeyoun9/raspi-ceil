@@ -243,7 +243,7 @@ if __name__ == "__main__":
                 os.system('rm raspi-ceil.py')
                 os.system('mv raspi-ceil.py.1 raspi-ceil.py')
             print "restarting with the new version"
-            if len(sys.argv > 2):
+            if len(sys.argv) > 2:
                 # the second parameter is the location of the config file
                 os.system("python raspi-ceil.py restart {} &".format(sys.argv[2]))
             else:
