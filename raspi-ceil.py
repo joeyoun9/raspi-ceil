@@ -34,6 +34,33 @@ SEND DATA TO OUR SERVERS.
 
 
 
+def read_config(config):
+    """
+    read a simple config file, and set the attributes for operation
+    
+    default filename is ceil.conf, and is in the local directory. 
+    """
+    selections = {
+              "BAUDRATE":9600,
+              "BYTESIZE":7,
+              "BOM":1,
+              "EOM":4,
+              "PORT":0,
+              "FILESTR":"ceil",
+              "LOCATION":"/home/pi",
+              "DELAY":.5
+              }
+    try:
+        f = open("ceil.conf", 'r')
+    except IOError:
+        return selections
+
+    for line in f:
+        p = line.split(":")
+        if p[0].strip() in selections.keys():
+            selections[p[0].strip()] = p[1].strip()
+    f.close()
+    return selections
 
 
 
@@ -197,6 +224,7 @@ if __name__ == "__main__":
 
     # use keyword 'dev' to run the code in non-recording dev/verbose mode
     devmode = False
+    config_file = "./ceil.conf"
     if len(sys.argv) > 1:
         if sys.argv[1] == 'dev':
             devmode = True
@@ -215,7 +243,11 @@ if __name__ == "__main__":
                 os.system('rm raspi-ceil.py')
                 os.system('mv raspi-ceil.py.1 raspi-ceil.py')
             print "restarting with the new version"
-            os.system('python raspi-ceil.py restart &')
+            if len(sys.argv > 2):
+                # the second parameter is the location of the config file
+                os.system("python raspi-ceil.py restart {} &".format(sys.argv[2]))
+            else:
+                os.system('python raspi-ceil.py restart &')
 
             print "RASPI-CEIL SOFTWARE UPDATED FROM GITHUB"
             exit()
@@ -226,6 +258,23 @@ if __name__ == "__main__":
                 pid = f.read()
                 f.close()
                 killproc(pid)
+            if len(sys.argv > 2):
+                # then a config file was passed, read it!
+                config_file = sys.argv[2]
+        else:
+            # then the first argument was the config file!
+            config_file = sys.argv[2]
+
+    settings = read_config(config_file)
+    BAUDRATE = int(settings['BAUDRATE'])
+    BYTESIZE = int(settings['BYTESIZE'])
+    BOM = chr(int(settings['BOM']))
+    EOM = chr(int(settings['EOM']))
+    PORT = int(settings['PORT'])
+    FILESTR = settings['FILESTR']
+    LOCATION = settings['LOCATION']
+    if not LOCATION[-1] == "/": LOCATION += "/"
+    DELAY = float(settings['DELAY'])
 
 
     main(BAUDRATE, BYTESIZE, BOM, EOM, PORT, FILESTR, LOCATION, DELAY, devmode)
