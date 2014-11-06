@@ -7,7 +7,7 @@ import logging as lg
 import os
 import sys
 import signal
-
+import gzip
 
 
 BAUDRATE = 9600  # 2400  # I have no idea where this number came from..., baud rate is 300 for the instrument, up to 1200 on demand...
@@ -73,14 +73,13 @@ def save(data, LOCATION, FILESTR):
     VIA A SIMPLE PUSH COMMAND.
     """
 
-    save_name = '{:%Y%m%d}_{}.dat'.format(datetime.datetime.utcnow(), FILESTR)
+    save_name = '{:%Y%m%d}_{}.dat.gz'.format(datetime.datetime.utcnow(), FILESTR)
 
     save_location = LOCATION + 'data/' + save_name
     try:
-        fh = open(save_location, 'a')
-        fh.write("\n" + str(time.time()) + "\n")  # write the epoch time
-        fh.write(data)
-        fh.close()
+        with gzip.open(save_location, 'a') as fh:
+             fh.write("\n" + str(time.time()) + "\n")  # write the epoch time
+             fh.write(data)
     except:
         lg.warning('DATA NOT SAVED' + str(sys.exc_info()))
     try:
