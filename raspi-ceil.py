@@ -126,7 +126,7 @@ def main(BAUDRATE, BYTESIZE, BOM, EOM, PORT, FILESTR, LOCATION, DELAY, devmode=F
     if devmode:
         logfilename = None
     lg.basicConfig(filename=logfilename, filemode='a',
-                  format="%(asctime)s %(levelname)s: %(message)s", level=lg.DEBUG)
+                  format="%(asctime)s %(levelname)s: %(message)s", level=lg.INFO)
 
 
 
