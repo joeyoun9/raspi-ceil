@@ -189,7 +189,7 @@ def main(BAUDRATE, BYTESIZE, BOM, EOM, PORT, FILESTR, LOCATION, DELAY, devmode=F
     if devmode:
         print """
         
-            DEVMODE: PRINTING SERIAL DATA RECEIVED. 
+            DEVMODE: PRINTING SERIAL DATA RECEIVED. (data may still be getting recorded)
             NOTE: GARBLED TEXT MEANS BAUD RATE AND/OR BYTE SIZE NOT ACCURATELY SPECIFIED 
         
         /////////////////////////////////////////////////////////////////////////////////
@@ -199,24 +199,25 @@ def main(BAUDRATE, BYTESIZE, BOM, EOM, PORT, FILESTR, LOCATION, DELAY, devmode=F
 
     ob = ''
     while 1:
+        ln = ser.readline()
         time.sleep(DELAY)  # greatly reduce server load
-        if ser.inWaiting() > 0:
-            st = ser.read(ser.inWaiting())
-            if devmode:
-                print st
-                continue
-            ob += st
-            # and then check if both begin and end control characters are present. if so, save the ob
-            # WITH A TIMESTAMP!
-            if BOM in ob and EOM in ob:
-                ob = ob[ob.find(BOM):ob.find(EOM) + 1]  # remove any rogue newlines
-                save(ob, LOCATION, FILESTR)
-                lg.debug('Message received')
-                ob = ''
-            elif EOM in ob and not BOM in ob:
-                # this means the recorder started in the middle of a message, save it
-                save(ob, LOCATION, FILESTR)
-                ob = ''
+        if !ln:
+            continue
+        if devmode:
+            print ln,
+            #continue
+        ob += ln
+        # and then check if both begin and end control characters are present. if so, save the ob
+        # WITH A TIMESTAMP!
+        if BOM in ob and EOM in ob:
+            ob = ob[ob.find(BOM):ob.find(EOM) + 1]  # remove any rogue newlines
+            save(ob, LOCATION, FILESTR)
+            lg.debug('Message received')
+            ob = ''
+        elif EOM in ob and not BOM in ob:
+            # this means the recorder started in the middle of a message, save it
+            save(ob, LOCATION, FILESTR)
+            ob = ''
 
 
 if __name__ == "__main__":
