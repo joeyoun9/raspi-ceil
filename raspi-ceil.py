@@ -201,7 +201,7 @@ def main(BAUDRATE, BYTESIZE, BOM, EOM, PORT, FILESTR, LOCATION, DELAY, devmode=F
     while 1:
         ln = ser.readline()
         time.sleep(DELAY)  # greatly reduce server load
-        if !ln:
+        if not ln:
             continue
         if devmode:
             print ln,
