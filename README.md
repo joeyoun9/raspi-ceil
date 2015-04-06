@@ -21,7 +21,9 @@ This way it will constantly be called, and the script is able to know when anoth
 How to manually run
 -------------------
 Test performance, even with the crontab configured, by running with the debug flag
+
 `python raspi-ceil.py dev`
+
 This will force the script to kill any other versions running, and it will dump the output to the screen, so you can see if your connection settings are correct. If they are bad, you will just see jarbled text come out when the ceilometer should be reporting. 
 
 Updating
