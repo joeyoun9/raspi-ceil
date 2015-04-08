@@ -10,19 +10,6 @@ import signal
 import gzip
 
 
-BAUDRATE = 9600  # 2400  # I have no idea where this number came from..., baud rate is 300 for the instrument, up to 1200 on demand...
-BYTESIZE = 7  # I assume this is 8-bit with 1 start bit means 8-1 = 7... again, no idea here...
-BOM = chr(001)  # chr(002)  # beginning of message chr(001) for CL-31
-EOM = chr(004)  # chr(003)  # end of message chr(004) for CL-31
-PORT = 0  # change this if you know port ttyUSB0 is taken
-FILESTR = "ceil"  # unique string for the filename that will be saved
-
-LOCATION = "/home/pi/"  # where the codes and data are located. If you change this, change the cron too!
-DELAY = .5  # how long to wait between polling - larger delay reduces the number of iterations made (thus the load on the RPI)
-
-
-
-
 
 """
 THAT SHOULD BE THE END OF THINGS THAT NEED CUSTOMIZING
@@ -46,9 +33,11 @@ def read_config(config):
               "BOM":1,
               "EOM":4,
               "PORT":0,
-              "FILESTR":"ceil",
+              "FILESTR":"UUCL1",
+              "DATEFMT":"%Y%m%d"
               "LOCATION":"/home/pi",
               "DELAY":.5
+
               }
     try:
         f = open("ceil.conf", 'r')
@@ -66,14 +55,14 @@ def read_config(config):
 
 
 
-def save(data, LOCATION, FILESTR):
+def save(data, LOCATION, FILESTR, DATEFMT):
     """
     THIS IS THE FUNCTION THAT RECEIVES A DATA MESSAGE AND SAVES IT LOCALLY
     AND THEN THE FUNCTION ATTEMPTS TO SEND THE DATA TO OUR SERVER AT MESO1
     VIA A SIMPLE PUSH COMMAND.
     """
 
-    save_name = '{:%Y%m%d}_{}.dat.gz'.format(datetime.datetime.utcnow(), FILESTR)
+    save_name = '{:'+DATEFMT+'}_{}.dat.gz'.format(datetime.datetime.utcnow(), FILESTR)
 
     save_location = LOCATION + 'data/' + save_name
     try:
@@ -82,26 +71,6 @@ def save(data, LOCATION, FILESTR):
              fh.write(data)
     except:
         lg.warning('DATA NOT SAVED' + str(sys.exc_info()))
-    try:
-        # this is where we send thed data to the internets!
-        pass
-    except:
-        # well, it failed. no worries, the data should sill be safe
-        pass
-
-
-    # TEMPORARY FILE, HOLDS YESTERDAYS (gzipped) FILE SO IT CAN BE EASILY FETCHED!
-
-    """
-    temp_file_name = '{:%Y%m%d}_{}.dat'.format((datetime.datetime.utcnow()-datetime.timedelta(1)),FILESTR)
-
-    if not temp_file_name+'.gz' in os.listdir(LOCATION+"data/temp/") and not temp_file_name in os.listdir(LOCATION+"data/temp/"):
-        # remove the old temp file, and copy in this one
-        os.system('rm '+LOCATION+"data/temp/*_"+FILESTR+".d*")
-        os.system('cp '+LOCATION+"data/"+temp_file_name+" "+LOCATION+"data/temp/"+temp_file_name)
-        os.system('gzip '+LOCATION+"data/temp/"+temp_file_name+" &")
-    """
-
 
 def testproc(proc):
     try:
@@ -116,7 +85,7 @@ def killproc(proc):
         os.kill(int(proc), signal.SIGTERM)  # or SIGKILL or SIGABORT...
     return
 
-def main(BAUDRATE, BYTESIZE, BOM, EOM, PORT, FILESTR, LOCATION, DELAY, devmode=False):
+def main(BAUDRATE, BYTESIZE, BOM, EOM, PORT, FILESTR, LOCATION, DATEFMT, DELAY, devmode=False):
     """
     The main loop for listening to a Vaisala ceilometer connected via USB
     
@@ -211,12 +180,12 @@ def main(BAUDRATE, BYTESIZE, BOM, EOM, PORT, FILESTR, LOCATION, DELAY, devmode=F
         # WITH A TIMESTAMP!
         if BOM in ob and EOM in ob:
             ob = ob[ob.find(BOM):ob.find(EOM) + 1]  # remove any rogue newlines
-            save(ob, LOCATION, FILESTR)
+            save(ob, LOCATION, FILESTR, DATEFMT)
             lg.debug('Message received')
             ob = ''
         elif EOM in ob and not BOM in ob:
             # this means the recorder started in the middle of a message, save it
-            save(ob, LOCATION, FILESTR)
+            save(ob, LOCATION, FILESTR, DATEFMT)
             ob = ''
 
 
@@ -226,6 +195,9 @@ if __name__ == "__main__":
     devmode = False
     config_file = "./ceil.conf"
     arglen = len(sys.argv)
+    #
+    #	Handle any arguments passed
+    #
     if arglen > 1:
         if sys.argv[1] == 'dev':
             devmode = True
@@ -274,8 +246,9 @@ if __name__ == "__main__":
     PORT = int(settings['PORT'])
     FILESTR = settings['FILESTR']
     LOCATION = settings['LOCATION']
+    DATEFMT = settings['DATEFMT']
     if not LOCATION[-1] == "/": LOCATION += "/"
     DELAY = float(settings['DELAY'])
 
 
-    main(BAUDRATE, BYTESIZE, BOM, EOM, PORT, FILESTR, LOCATION, DELAY, devmode)
+    main(BAUDRATE, BYTESIZE, BOM, EOM, PORT, FILESTR, LOCATION, DATEFMT, DELAY, devmode)
