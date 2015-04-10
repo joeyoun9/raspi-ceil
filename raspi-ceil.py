@@ -62,7 +62,7 @@ def save(data, LOCATION, FILESTR, DATEFMT):
     VIA A SIMPLE PUSH COMMAND.
     """
 
-    save_name = '{:'+DATEFMT+'}_{}.dat.gz'.format(datetime.datetime.utcnow(), FILESTR)
+    save_name = '{fid}.{dt:'+DATEFMT+'}.dat.gz'.format{dt=datetime.datetime.utcnow(), fid=FILESTR)
 
     save_location = LOCATION + 'data/' + save_name
     try:
