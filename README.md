@@ -5,7 +5,7 @@ Simple code for connecting to and recoring messages from a ceilometer using a ra
 
 Set the connection settings for your ceilometer (noting that this may not work perfectly if you have mulitple USB peripherals connected)
 
-Must have a ceil.conf file in the same directory the code runs from
+Must have a ceil.conf file in the same directory the code runs from. Requires PySerial to be installed, which should be doable with `pip install pyserial`
 
 How To Run
 ----------
