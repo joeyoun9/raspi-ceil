@@ -92,8 +92,10 @@ def main(BAUDRATE, BYTESIZE, BOM, EOM, PORT, FILESTR, LOCATION, DATEFMT, DELAY, 
     """
 
     logfilename = LOCATION + "log/raspi-ceil.log"
+    loglevel = lg.WARNING
     if devmode:
         logfilename = None
+        loglevel = lg.DEBUG
     if not os.path.exists(LOCATION):
         print "LOCATION ({}) does not exist. please update ceil.conf!".format(LOCATION)
         exit()
@@ -101,8 +103,10 @@ def main(BAUDRATE, BYTESIZE, BOM, EOM, PORT, FILESTR, LOCATION, DATEFMT, DELAY, 
     if not os.path.exists(os.path.dirname(logfilename)):
         os.mkdir(LOCATION+"log")
 
+
     lg.basicConfig(filename=logfilename, filemode='a',
-                  format="%(asctime)s %(levelname)s: %(message)s", level=lg.INFO)
+                  format="%(asctime)s %(levelname)s: %(message)s", level=lg.WARNING)
+
 
 
 
