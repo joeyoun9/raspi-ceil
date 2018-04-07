@@ -246,7 +246,7 @@ if __name__ == "__main__":
             f.close()
             killproc(pid)
         # ok, we have killed the old one
-        os.system('wget https://raw.github.com/joeyoun9/raspi-ceil/master/raspi-ceil.py -O raspi-ceil.py')
+        os.system('wget https://raw.githubusercontent.com/joeyoun9/raspi-ceil/master/raspi-ceil.py -O raspi-ceil.py')
         # if os.path.exists('./raspi-ceil.py.1'):
         #     os.system('rm raspi-ceil.py')
         #     os.system('mv raspi-ceil.py.1 raspi-ceil.py')
