@@ -34,7 +34,7 @@ def read_config(config):
               "EOM":4,
               "PORT":0,
               "FILESTR":"UUCL1",
-              "DATEFMT":"%Y%m%d"
+              "DATEFMT":"%Y%m%d",
               "LOCATION":"/home/pi",
               "DELAY":.5
 
@@ -62,7 +62,7 @@ def save(data, LOCATION, FILESTR, DATEFMT):
     VIA A SIMPLE PUSH COMMAND.
     """
 
-    save_name = '{fid}.{dt:'+DATEFMT+'}.dat.gz'.format{dt=datetime.datetime.utcnow(), fid=FILESTR)
+    save_name = '{fid}.{dt:'+DATEFMT+'}.dat.gz'.format(dt=datetime.datetime.utcnow(), fid=FILESTR)
 
     save_location = LOCATION + 'data/' + save_name
     try:
@@ -195,49 +195,23 @@ if __name__ == "__main__":
     devmode = False
     config_file = "./ceil.conf"
     arglen = len(sys.argv)
+    instruction = False;
     #
-    #	Handle any arguments passed
+    #	Handle any arguments passed, first break out if there is an instruction or just a config file
+    #   runs as raspi_ceil.py [instruction] [config_file]
     #
-    if arglen > 1:
-        if sys.argv[1] == 'dev':
-            devmode = True
-        elif sys.argv[1] == 'update':
-            # grab the newest version of this file from github, and replace this one
-            # assuming this is running in the directory where this file is, which, is necessary
-            if os.path.exists(LOCATION + ".raspiceilpid" + FILESTR):
-                # check it
-                f = open(LOCATION + ".raspiceilpid" + FILESTR, 'r')
-                pid = f.read()
-                f.close()
-                killproc(pid)
-            # ok, we have killed the old one
-            os.system('wget https://raw.github.com/joeyoun9/raspi-ceil/master/raspi-ceil.py')
-            if os.path.exists('./raspi-ceil.py.1'):
-                os.system('rm raspi-ceil.py')
-                os.system('mv raspi-ceil.py.1 raspi-ceil.py')
-            print "restarting with the new version"
-            if arglen > 2:
-                # the second parameter is the location of the config file
-                os.system("python raspi-ceil.py restart {} &".format(sys.argv[2]))
-            else:
-                os.system('python raspi-ceil.py restart &')
 
-            print "RASPI-CEIL SOFTWARE UPDATED FROM GITHUB"
-            exit()
-        elif sys.argv[1] == 'restart':
-            if os.path.exists(LOCATION + ".raspiceilpid" + FILESTR):
-                # check it
-                f = open(LOCATION + ".raspiceilpid" + FILESTR, 'r')
-                pid = f.read()
-                f.close()
-                killproc(pid)
+    if arglen > 1:
+        if sys.argv[1] in ['dev','test','update','restart']:
+            instruction = sys.argv[1]
             if arglen > 2:
-                # then a config file was passed, read it!
                 config_file = sys.argv[2]
         else:
-            # then the first argument was the config file!
             config_file = sys.argv[1]
 
+    #
+    #   Define parameters from the config file
+    #
     settings = read_config(config_file)
     BAUDRATE = int(settings['BAUDRATE'])
     BYTESIZE = int(settings['BYTESIZE'])
@@ -249,6 +223,42 @@ if __name__ == "__main__":
     DATEFMT = settings['DATEFMT']
     if not LOCATION[-1] == "/": LOCATION += "/"
     DELAY = float(settings['DELAY'])
+
+    #
+    # take the specified action
+    #
+    if instruction == 'dev' or instruction == 'test':
+        devmode = True
+    elif instruction == 'update':
+        # grab the newest version of this file from github, and replace this one
+        # assuming this is running in the directory where this file is, which, is necessary
+        if os.path.exists(LOCATION + ".raspiceilpid" + FILESTR):
+            # check it
+            f = open(LOCATION + ".raspiceilpid" + FILESTR, 'r')
+            pid = f.read()
+            f.close()
+            killproc(pid)
+        # ok, we have killed the old one
+        os.system('wget https://raw.github.com/joeyoun9/raspi-ceil/master/raspi-ceil.py -O raspi-ceil.py')
+        # if os.path.exists('./raspi-ceil.py.1'):
+        #     os.system('rm raspi-ceil.py')
+        #     os.system('mv raspi-ceil.py.1 raspi-ceil.py')
+        print "restarting with the new version"
+        # just execute with the config file directly.
+        os.system("python raspi-ceil.py restart {} &".format(config_file))
+        print "RASPI-CEIL SOFTWARE UPDATED FROM GITHUB"
+        exit() 
+
+    elif instruction == 'restart':
+        if os.path.exists(LOCATION + ".raspiceilpid" + FILESTR):
+            # check it
+            f = open(LOCATION + ".raspiceilpid" + FILESTR, 'r')
+            pid = f.read()
+            f.close()
+            killproc(pid)
+            
+
+   
 
 
     main(BAUDRATE, BYTESIZE, BOM, EOM, PORT, FILESTR, LOCATION, DATEFMT, DELAY, devmode)
