@@ -100,8 +100,8 @@ def main(BAUDRATE, BYTESIZE, BOM, EOM, PORT, FILESTR, LOCATION, DATEFMT, DELAY, 
         print "LOCATION ({}) does not exist. please update ceil.conf!".format(LOCATION)
         exit()
     
-    if not os.path.exists(os.path.dirname(logfilename)):
-        os.mkdir(LOCATION+"log")
+    if not os.path.exists(LOCATION+"log/"):
+        os.mkdir(LOCATION+"log/")
 
 
     lg.basicConfig(filename=logfilename, filemode='a',
